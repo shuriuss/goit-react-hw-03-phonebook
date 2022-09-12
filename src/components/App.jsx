@@ -3,8 +3,9 @@ import React, { Component } from 'react';
 import Form from './Form';
 import Filter from './Filter';
 import ContactList from './ContactList';
-import s from './App.module.css'
+import s from './App.module.css';
 
+const CONTACT_LOCALSTORAGE_KEY = 'users';
 
 export class App extends Component {
   state = {
@@ -16,6 +17,22 @@ export class App extends Component {
     ],
     filter: '',
   };
+
+  componentDidMount() {
+    const localData = localStorage.getItem(CONTACT_LOCALSTORAGE_KEY);
+    this.setState({
+      contacts: localData ? JSON.parse(localData) : this.state.contacts,
+    });
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (prevState.contacts.length !== this.state.contacts.length) {
+      localStorage.setItem(
+        CONTACT_LOCALSTORAGE_KEY,
+        JSON.stringify(this.state.contacts)
+      );
+    }
+  }
 
   handlerSearch = e => {
     this.setState({ filter: e.target.value.toLowerCase() });
@@ -54,14 +71,9 @@ export class App extends Component {
         <h1>Phonbook</h1>
         <Form onSubmit={this.handleSubmit} />
 
-        
-          <h2>Contacts</h2>
-          <Filter value={this.state.filter} onChange={this.handlerSearch} />
-          <ContactList
-            contacts={filteredContacts}
-            onDelete={this.handleDelete}
-          />
-        
+        <h2>Contacts</h2>
+        <Filter value={this.state.filter} onChange={this.handlerSearch} />
+        <ContactList contacts={filteredContacts} onDelete={this.handleDelete} />
       </section>
     );
   }
