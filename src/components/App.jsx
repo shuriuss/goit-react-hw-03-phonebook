@@ -20,6 +20,10 @@ export class App extends Component {
 
   componentDidMount() {
     const localData = localStorage.getItem(CONTACT_LOCALSTORAGE_KEY);
+    console.log(localData);
+    if (!localData) {
+     return 
+    }
     this.setState({
       contacts: localData ? JSON.parse(localData) : this.state.contacts,
     });
